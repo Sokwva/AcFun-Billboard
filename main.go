@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"sokwva/acfun/billboard/common"
+	"sokwva/acfun/billboard/db/timeseries"
 	"sokwva/acfun/billboard/fetch/dougaInfo"
+	"sokwva/acfun/billboard/poll"
 )
 
 type ApiResp struct {
@@ -20,18 +21,17 @@ type ApiResp struct {
 func main() {
 	common.InitConfDriver()
 	common.InitLogger()
-	// err := timeseries.InitClient()
-	// if err != nil {
-	// 	common.Log.Error("init timeseries driver faild: " + err.Error())
-	// 	return
-	// }
-
-	// poll.Poller()
-	dougaInfo.InitGrpcClient()
-	a, err := dougaInfo.GetVideoInfo("4741173")
+	err := timeseries.InitClient()
 	if err != nil {
-		fmt.Println(err.Error())
+		common.Log.Error("init timeseries driver faild: " + err.Error())
 		return
 	}
-	fmt.Println(a)
+	err = dougaInfo.InitGrpcClient()
+	if err != nil {
+		common.Log.Error("grpc client init faild")
+		return
+	}
+	defer dougaInfo.CloseGrpcClient()
+
+	poll.Poller()
 }

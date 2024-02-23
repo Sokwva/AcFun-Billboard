@@ -15,7 +15,6 @@ var rpcClient *grpc.ClientConn
 var RPCConn rpcproto.GetClient
 
 func InitGrpcClient() error {
-	//"grpc: no transport security set (use grpc.WithTransportCredentials(insecure.NewCredentials()) explicitly or set credentials)"
 	var authSet []grpc.DialOption
 	if common.ConfHandle.RPC.DougaInfo.UserName == "" {
 		authSet = append(authSet, grpc.WithTransportCredentials(insecure.NewCredentials()))

@@ -16,6 +16,7 @@ func InitClient() error {
 	tsdbHandle = influxdb2.NewClient("http://"+common.ConfHandle.Persist.SvrAddr+":"+common.ConfHandle.Persist.SvrPort, common.ConfHandle.Persist.SvrApiKey)
 	var ctx context.Context = context.Background()
 	if _, err := tsdbHandle.Health(ctx); err != nil {
+		common.Log.Error(err.Error())
 		return err
 	}
 	return nil

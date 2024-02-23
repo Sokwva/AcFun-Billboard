@@ -1,7 +1,8 @@
 package fetch
 
 import (
-	"fmt"
+	"sokwva/acfun/billboard/common"
+	"sokwva/acfun/billboard/db/timeseries"
 	"sokwva/acfun/billboard/fetch/dougaInfo"
 )
 
@@ -22,7 +23,7 @@ func FetchInfoAndSaveToTSDB(acid string, done chan string) {
 		"viewCount":    info.ViewCount,
 		"bananaCount":  info.BananaCount,
 	}
-	// timeseries.SaveTSRecord(tags, fields)
-	fmt.Println(tags, fields)
+	timeseries.SaveTSRecord(tags, fields)
+	common.Log.Info("write data to tsdb:", acid, fields)
 	done <- acid
 }
