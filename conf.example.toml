@@ -1,0 +1,21 @@
+[Server]
+address = "0.0.0.0"
+port = 8097
+
+[Logging]
+Level = "info"
+
+[Poller]
+Interval = 10
+RandShift = true
+
+[Persist]
+# driver type: influxdb
+Driver = "influxdb"
+SvrAddr = "192.168.1.10"
+SvrPort = "8099"
+SvrApiKey = "ffgrW1Qmh05LtGuGoPuOFo1oTZoOsE7Ug2H1GZCpfUDaWzh6YRhYLkXy1R50ePyAIBuT_EtmrYJcoTHBV9e7Cw=="
+OrgName = "testorg"
+StorageBucket = "Test0"
+SvrUserName = ""
+SvrPassword = ""
