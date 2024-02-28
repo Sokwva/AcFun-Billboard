@@ -3,7 +3,6 @@ package dougaInfo
 import (
 	"context"
 	"encoding/json"
-	"sokwva/acfun/billboard/common"
 	rpcproto "sokwva/acfun/dougaInfo/server/protoLib"
 	"time"
 
@@ -14,12 +13,12 @@ import (
 var rpcClient *grpc.ClientConn
 var RPCConn rpcproto.GetClient
 
-func InitGrpcClient() error {
+func InitGrpcClient(userName string, target string, port string) error {
 	var authSet []grpc.DialOption
-	if common.ConfHandle.RPC.DougaInfo.UserName == "" {
+	if userName == "" {
 		authSet = append(authSet, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
-	rpcClient, err := grpc.Dial(common.ConfHandle.RPC.DougaInfo.Addr+":"+common.ConfHandle.RPC.DougaInfo.Port, authSet...)
+	rpcClient, err := grpc.Dial(target+":"+port, authSet...)
 	if err != nil {
 		return err
 	}
@@ -28,7 +27,9 @@ func InitGrpcClient() error {
 }
 
 func CloseGrpcClient() {
-	rpcClient.Close()
+	if rpcClient != nil {
+		rpcClient.Close()
+	}
 }
 
 func GetVideoInfo(acid string) (DougaInfo, error) {

@@ -26,7 +26,7 @@ func main() {
 		common.Log.Error("init timeseries driver faild: " + err.Error())
 		return
 	}
-	err = dougaInfo.InitGrpcClient()
+	err = dougaInfo.InitGrpcClient(common.ConfHandle.RPC.DougaInfo.UserName, common.ConfHandle.RPC.DougaInfo.Addr, common.ConfHandle.RPC.DougaInfo.Port)
 	if err != nil {
 		common.Log.Error("grpc client init faild")
 		return
