@@ -19,12 +19,13 @@ func InitClient() error {
 		common.Log.Error(err.Error())
 		return err
 	}
+	common.Log.Debug("timeseries.InitClient: inited client")
 	return nil
 }
 
-func SaveTSRecord(tags map[string]string, fields map[string]interface{}) {
+func SaveTSRecord(measurement string, tags map[string]string, fields map[string]interface{}) {
 	writeAPI := tsdbHandle.WriteAPIBlocking(common.ConfHandle.Persist.OrgName, common.ConfHandle.Persist.StorageBucket)
-	point := write.NewPoint("dougaInfo", tags, fields, time.Now())
+	point := write.NewPoint(measurement, tags, fields, time.Now())
 
 	if err := writeAPI.WritePoint(context.Background(), point); err != nil {
 		common.Log.Error(err.Error())
