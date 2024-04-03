@@ -170,3 +170,50 @@ type RankList struct {
 	OriginalDeclare             int            `json:"originalDeclare,omitempty"`
 	StaffContribute             bool           `json:"staffContribute,omitempty"`
 }
+
+type ArticleApi struct {
+	Result    int               `json:"result"`
+	HostName  string            `json:"host-name"`
+	RankList  []ArticleRankList `json:"rankList"`
+	RequestID string            `json:"requestId"`
+}
+type ArticleTagList struct {
+	Name string `json:"name"`
+	ID   int    `json:"id"`
+}
+type ArticleRankList struct {
+	GroupID                     string           `json:"groupId"`
+	SourcePlatform              string           `json:"sourcePlatform"`
+	IsFollowing                 bool             `json:"isFollowing"`
+	UserImg                     string           `json:"userImg"`
+	ChannelID                   int              `json:"channelId"`
+	ViewCount                   int              `json:"viewCount"`
+	CommentCount                int              `json:"commentCount"`
+	BananaCount                 int              `json:"bananaCount"`
+	ResourceID                  int              `json:"resourceId"`
+	ResourceType                string           `json:"resourceType"`
+	ChannelName                 string           `json:"channelName"`
+	ContentID                   int              `json:"contentId"`
+	FansCount                   int              `json:"fansCount"`
+	TagList                     []ArticleTagList `json:"tagList,omitempty"`
+	AuthorID                    int              `json:"authorId"`
+	UserID                      int              `json:"userId"`
+	ContentTitle                string           `json:"contentTitle"`
+	VideoCover                  string           `json:"videoCover"`
+	UserSignature               string           `json:"userSignature"`
+	ContributionCount           int              `json:"contributionCount"`
+	DanmuCount                  int              `json:"danmuCount"`
+	ContributeTime              int64            `json:"contributeTime"`
+	UserName                    string           `json:"userName"`
+	CoverImgInfo                CoverImgInfo     `json:"coverImgInfo"`
+	CommentCountTenThousandShow string           `json:"commentCountTenThousandShow"`
+	ShareURL                    string           `json:"shareUrl"`
+	ViewCountShow               string           `json:"viewCountShow"`
+	DanmakuCountShow            string           `json:"danmakuCountShow"`
+	BananaCountShow             string           `json:"bananaCountShow"`
+	ContentType                 int              `json:"contentType"`
+	Status                      int              `json:"status"`
+	UserHeadImgInfo             UserHeadImgInfo  `json:"userHeadImgInfo"`
+	Channel                     Channel          `json:"channel"`
+	ContentDesc                 string           `json:"contentDesc,omitempty"`
+}
