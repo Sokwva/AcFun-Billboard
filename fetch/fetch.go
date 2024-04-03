@@ -27,10 +27,10 @@ func commonClient() *http.Client {
 	return &client
 }
 
-func Do(target string, ungzip bool) (string, error) {
+func fetch(target string, method string, data string, ungzip bool) (string, error) {
 	client := commonClient()
 
-	req, err := http.NewRequest("GET", target, nil)
+	req, err := http.NewRequest(method, target, bytes.NewBufferString(data))
 	if err != nil {
 		return "", err
 	}
@@ -66,4 +66,12 @@ func Do(target string, ungzip bool) (string, error) {
 
 	buff := bytes.NewBuffer(raw)
 	return buff.String(), nil
+}
+
+func Get(target string, unzip bool) (string, error) {
+	return fetch(target, "GET", "", unzip)
+}
+
+func Post(target string, data string, unzip bool) (string, error) {
+	return fetch(target, "POST", data, unzip)
 }
