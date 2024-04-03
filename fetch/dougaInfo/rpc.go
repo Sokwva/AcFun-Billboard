@@ -3,6 +3,7 @@ package dougaInfo
 import (
 	"context"
 	"encoding/json"
+	"sokwva/acfun/billboard/common"
 	rpcproto "sokwva/acfun/dougaInfo/server/protoLib"
 	"time"
 
@@ -19,10 +20,13 @@ func InitGrpcClient(userName string, target string, port string) error {
 		authSet = append(authSet, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
 	rpcClient, err := grpc.Dial(target+":"+port, authSet...)
+	common.Log.Debug("dougaInfo.InitGrpcClient: grpc.Dial ready to call")
 	if err != nil {
 		return err
 	}
+	common.Log.Debug("dougaInfo.InitGrpcClient: grpc.Dial ok")
 	RPCConn = rpcproto.NewGetClient(rpcClient)
+	common.Log.Debug("dougaInfo.InitGrpcClient: rpcproto.NewGetClient create client")
 	return nil
 }
 
