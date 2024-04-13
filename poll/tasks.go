@@ -161,29 +161,12 @@ var (
 		"article": {
 			TargetUrl: fetch.ArticleIndexUrl,
 			Trigger: func(Url, taskName string) {
-				var perTaskDone chan string = make(chan string)
 				var localTaskDone chan bool = make(chan bool)
 				var fetchResp []string
 				detailInfo, err := dailyboard.ArticleSubPart()
 				if err != nil {
-					str, err := dailyboard.ArticleSubPartStr()
-					if err == nil {
-						fetchResp, err = parser.CommonSubPart(str)
-						if err != nil {
-							departDone <- taskName
-							return
-						}
-					} else {
-						if reflect.TypeOf(lastSuccessResp[taskName]).Kind() == reflect.Slice {
-							fetchResp = (lastSuccessResp[taskName]).([]string)
-						}
-						common.Log.Info("poller.commonTask: call " + taskName + " faild,use last fetch result." + strconv.Itoa(len(fetchResp)))
-					}
-					go taskCheck(fetchResp, localTaskDone, perTaskDone)
-					for _, v := range fetchResp {
-						common.Log.Debug("poller.commonTask: task[" + v + "] ready to call fetch.FetchInfoAndSaveToTSDB")
-						go fetch.FetchInfoAndSaveToTSDB(taskName, v, perTaskDone)
-					}
+					//文章区列表的和其他区的列表结构不一样，这里先删了，后续再写
+					return
 				} else {
 					for _, v := range detailInfo.RankList {
 						common.Log.Debug("poller.commonTask: direct task[" + strconv.Itoa(v.ResourceID) + "] ready to call fetch.FetchInfoAndSaveToTSDB")

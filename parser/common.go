@@ -26,7 +26,7 @@ func CommonSubPart(raw string) (result []string, err error) {
 			if ok {
 				result[i] = acid
 			}
-			common.Log.Debug("parser.CommonSubPart: ", acid, name.Text())
+			common.Log.Debug("parser.CommonSubPart:", acid, name.Text())
 		})
 	})
 	return
