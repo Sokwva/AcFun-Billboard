@@ -19,7 +19,7 @@ func InitGrpcClient(userName string, target string, port string) error {
 	if userName == "" {
 		authSet = append(authSet, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
-	rpcClient, err := grpc.Dial(target+":"+port, authSet...)
+	rpcClient, err := grpc.NewClient(target+":"+port, authSet...)
 	common.Log.Debug("dougaInfo.InitGrpcClient: grpc.Dial ready to call")
 	if err != nil {
 		return err
