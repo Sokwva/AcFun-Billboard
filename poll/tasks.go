@@ -40,10 +40,12 @@ func commonTask() func(Url, taskName string) {
 				common.Log.Debug("poller.commonTask: task[" + v + "] ready to call fetch.FetchInfoAndSaveToTSDB")
 				go fetch.FetchInfoAndSaveToTSDB(taskName, v, perTaskDone)
 			}
+			//等待完成
+			<-localTaskDone
 		} else {
 			//直接从接口获取成功
 			for _, v := range detailInfo.RankList {
-				common.Log.Debug("poller.commonTask: direct task[" + v.DougaID + "] ready to call fetch.FetchInfoAndSaveToTSDB")
+				common.Log.Debug("poller.commonTask: direct task[" + v.DougaID + "] ready to call timeseries.SaveTSRecord")
 				tags := map[string]string{
 					"acid": v.DougaID,
 				}
@@ -59,8 +61,6 @@ func commonTask() func(Url, taskName string) {
 				timeseries.SaveTSRecord(taskName, tags, fields)
 			}
 		}
-		//等待完成
-		<-localTaskDone
 		lastSuccessResp[taskName] = fetchResp
 		departDone <- taskName
 	}
@@ -98,9 +98,11 @@ var (
 						common.Log.Debug("poller.commonTask: task[" + v + "] ready to call fetch.FetchInfoAndSaveToTSDB")
 						go fetch.FetchInfoAndSaveToTSDB(taskName, v, perTaskDone)
 					}
+					//等待完成
+					<-localTaskDone
 				} else {
 					for _, v := range detailInfo.RankList {
-						common.Log.Debug("poller.commonTask: direct task[" + v.DougaID + "] ready to call fetch.FetchInfoAndSaveToTSDB")
+						common.Log.Debug("poller.commonTask: direct task[" + v.DougaID + "] ready to call timeseries.SaveTSRecord")
 						tags := map[string]string{
 							"acid": v.DougaID,
 						}
@@ -116,8 +118,6 @@ var (
 						timeseries.SaveTSRecord(taskName, tags, fields)
 					}
 				}
-				//等待完成
-				<-localTaskDone
 				lastSuccessResp[taskName] = fetchResp
 				departDone <- taskName
 			},
@@ -161,7 +161,7 @@ var (
 		"article": {
 			TargetUrl: fetch.ArticleIndexUrl,
 			Trigger: func(Url, taskName string) {
-				var localTaskDone chan bool = make(chan bool)
+				// var localTaskDone chan bool = make(chan bool)
 				var fetchResp []string
 				detailInfo, err := dailyboard.ArticleSubPart()
 				if err != nil {
@@ -169,7 +169,7 @@ var (
 					return
 				} else {
 					for _, v := range detailInfo.RankList {
-						common.Log.Debug("poller.commonTask: direct task[" + strconv.Itoa(v.ResourceID) + "] ready to call fetch.FetchInfoAndSaveToTSDB")
+						common.Log.Debug("poller.commonTask: direct task[" + strconv.Itoa(v.ResourceID) + "] ready to call timeseries.SaveTSRecord")
 						tags := map[string]string{
 							"acid": strconv.Itoa(v.ResourceID),
 						}
@@ -182,7 +182,7 @@ var (
 					}
 				}
 				//等待完成
-				<-localTaskDone
+				// <-localTaskDone
 				lastSuccessResp[taskName] = fetchResp
 				departDone <- taskName
 			},
