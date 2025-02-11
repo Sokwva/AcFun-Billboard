@@ -1,25 +1,15 @@
-package main
+package saveDougaInfoToDb
 
 import (
+	"fmt"
 	"sokwva/acfun/billboard/common"
 	"sokwva/acfun/billboard/db/timeseries"
 	"sokwva/acfun/billboard/fetch/dougaInfo"
-	"sokwva/acfun/billboard/poll"
+	"testing"
 )
 
-type ApiResp struct {
-	Container string   `json:"container"`
-	Id        string   `json:"id"`
-	HTML      string   `json:"html"`
-	Style     []string `json:"styles"`
-	Scripts   []string `json:"scripts"`
-	Mode      string   `json:"mode"`
-	Js        []string `json:"js"`
-	Css       []string `json:"css"`
-}
-
-func main() {
-	common.InitConfDriver("")
+func Test_mongoConn(t *testing.T) {
+	common.InitConfDriver("../../conf.toml")
 	common.InitLogger()
 	err := timeseries.InitClient()
 	if err != nil {
@@ -33,5 +23,11 @@ func main() {
 	}
 	defer dougaInfo.CloseGrpcClient()
 
-	poll.Poller()
+	err = InitClient()
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(common.ConfHandle.DougaInfoSave)
+	fmt.Println(CheckACIDExist("31506965"))
 }

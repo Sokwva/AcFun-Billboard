@@ -19,7 +19,7 @@ type LoggingConf struct {
 	Level string
 }
 
-type PersistCOnf struct {
+type PersistConf struct {
 	Driver        string
 	SvrAddr       string
 	SvrPort       string
@@ -28,6 +28,13 @@ type PersistCOnf struct {
 	SvrPassword   string
 	StorageBucket string
 	OrgName       string
+}
+
+type DougaInfoSaveTriggerConf struct {
+	Enabled                bool
+	MongoSvrConnURI        string
+	DbName                 string
+	ACIDInfoCollectionName string
 }
 
 type PollerConf struct {
@@ -47,11 +54,12 @@ type RPCConf struct {
 }
 
 type Conf struct {
-	Server  SvrConf
-	Logging LoggingConf
-	Poller  PollerConf
-	Persist PersistCOnf
-	RPC     RPCConf
+	Server        SvrConf
+	Logging       LoggingConf
+	Poller        PollerConf
+	Persist       PersistConf
+	RPC           RPCConf
+	DougaInfoSave DougaInfoSaveTriggerConf
 }
 
 func logLevelMap(str string) slog.Level {
@@ -71,8 +79,11 @@ func InitLogger() {
 	Log.Info("Init Logger Level: " + ConfHandle.Logging.Level)
 }
 
-func InitConfDriver() {
-	if _, err := toml.DecodeFile("./conf.toml", &ConfHandle); err != nil {
+func InitConfDriver(confPath string) {
+	if confPath == "" {
+		confPath = "./conf.toml"
+	}
+	if _, err := toml.DecodeFile(confPath, &ConfHandle); err != nil {
 		panic(err)
 	}
 }
