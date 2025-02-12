@@ -1,14 +1,23 @@
 package poll
 
 import (
-	"reflect"
 	"sokwva/acfun/billboard/common"
+	saveDougaInfoToDb "sokwva/acfun/billboard/db/persist"
 	"sokwva/acfun/billboard/db/timeseries"
 	"sokwva/acfun/billboard/fetch"
 	dailyboard "sokwva/acfun/billboard/fetch/subPart"
 	"sokwva/acfun/billboard/parser"
 	"strconv"
 )
+
+// var limitRecordAcidRoutineChan = make(chan struct{}, 8)
+
+func recordAcidDougaInfo(acid string) {
+	if !saveDougaInfoToDb.CheckACIDExist(acid) {
+		saveDougaInfoToDb.WriteInDb(acid)
+	}
+	// limitRecordAcidRoutineChan <- struct{}{}
+}
 
 func commonTask() func(Url, taskName string) {
 	return func(Url string, taskName string) {
@@ -18,6 +27,7 @@ func commonTask() func(Url, taskName string) {
 		var fetchResp []string
 		detailInfo, err := dailyboard.SubPartStr(Url)
 		if err != nil {
+			common.Log.Debug("poller.commonTask: direct fetch of " + taskName + " faild,get from html: url: " + Url)
 			//获取失败就退回HTML获取方式
 			str, err := dailyboard.SubPartStrHTML(Url)
 			if err == nil {
@@ -28,10 +38,9 @@ func commonTask() func(Url, taskName string) {
 				}
 			} else {
 				//获取失败则直接使用上次的acid任务列表
-				if reflect.TypeOf(lastSuccessResp[taskName]).Kind() == reflect.Slice {
-					fetchResp = (lastSuccessResp[taskName]).([]string)
-				}
-				common.Log.Info("poller.commonTask: call " + taskName + " faild,use last fetch result." + strconv.Itoa(len(fetchResp)))
+				lastTempData, _ := lastSuccessResp.Load(taskName)
+				fetchResp = lastTempData.([]string)
+				common.Log.Debug("poller.commonTask: call " + taskName + " faild,use last fetch result." + strconv.Itoa(len(fetchResp)))
 			}
 			//启动任务检查协程
 			go taskCheck(fetchResp, localTaskDone, perTaskDone)
@@ -59,9 +68,11 @@ func commonTask() func(Url, taskName string) {
 					"bananaCount":  v.BananaCount,
 				}
 				timeseries.SaveTSRecord(taskName, tags, fields)
+				go recordAcidDougaInfo(v.DougaID)
+				// <-limitRecordAcidRoutineChan
 			}
 		}
-		lastSuccessResp[taskName] = fetchResp
+		lastSuccessResp.Store(taskName, fetchResp)
 		departDone <- taskName
 	}
 }
@@ -86,9 +97,8 @@ var (
 						}
 					} else {
 						//获取失败则直接使用上次的acid任务列表
-						if reflect.TypeOf(lastSuccessResp[taskName]).Kind() == reflect.Slice {
-							fetchResp = (lastSuccessResp[taskName]).([]string)
-						}
+						lastTempData, _ := lastSuccessResp.Load(taskName)
+						fetchResp = lastTempData.([]string)
 						common.Log.Info("poller.commonTask: call " + taskName + " faild,use last fetch result." + strconv.Itoa(len(fetchResp)))
 					}
 					//启动任务检查协程
@@ -116,9 +126,11 @@ var (
 							"bananaCount":  v.BananaCount,
 						}
 						timeseries.SaveTSRecord(taskName, tags, fields)
+						go recordAcidDougaInfo(v.DougaID)
+						// <-limitRecordAcidRoutineChan
 					}
 				}
-				lastSuccessResp[taskName] = fetchResp
+				lastSuccessResp.Store(taskName, fetchResp)
 				departDone <- taskName
 			},
 		},
@@ -183,7 +195,7 @@ var (
 				}
 				//等待完成
 				// <-localTaskDone
-				lastSuccessResp[taskName] = fetchResp
+				lastSuccessResp.Store(taskName, fetchResp)
 				departDone <- taskName
 			},
 		},

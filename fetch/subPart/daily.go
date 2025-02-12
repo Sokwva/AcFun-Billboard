@@ -54,7 +54,7 @@ func SubPartStrHTML(targetUrl string) (targetSlice string, err error) {
 		return
 	}
 	headerSlice := strings.Split(raw, "class=\"rank-list-main\"")
-	if len(headerSlice) == 0 {
+	if len(headerSlice) < 2 {
 		return "", errors.New("daily.SubPartStrHTML: can't find rank-list-main item from: " + targetUrl)
 	}
 	tailSlice := strings.Split(headerSlice[1], "<div class=\"footer\"")

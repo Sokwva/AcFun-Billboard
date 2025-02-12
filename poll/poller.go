@@ -3,12 +3,13 @@ package poll
 import (
 	"slices"
 	"sokwva/acfun/billboard/common"
+	"sync"
 	"time"
 )
 
 var (
-	lastSuccessResp map[string]interface{} = make(map[string]interface{})
-	allDone         chan bool              = make(chan bool)
+	lastSuccessResp sync.Map
+	allDone         chan bool = make(chan bool)
 
 	departDone chan string = make(chan string)
 )

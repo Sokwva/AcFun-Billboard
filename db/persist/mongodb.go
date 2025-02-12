@@ -17,6 +17,10 @@ var Handler *mongo.Client
 var collection *mongo.Collection
 
 func InitClient() error {
+	if !common.ConfHandle.DougaInfoSave.Enabled {
+		common.Log.Debug("did not enable DougaInfoSave")
+		return nil
+	}
 	if common.ConfHandle.DougaInfoSave.MongoSvrConnURI == "" {
 		return errors.New("conf file did no set mongo db conf")
 	}
@@ -39,13 +43,15 @@ func CheckACIDExist(acid string) bool {
 		common.Log.Debug("mongodb collection is nil", "acid", acid)
 		return false
 	}
-	res := collection.FindOne(context.Background(), bson.M{"dougaId": acid})
+	res := collection.FindOne(context.Background(), bson.M{"dougaid": acid})
+	common.Log.Debug("saveDougaInfoToDb.mongodb.CheckACIDExist check acid whether in db", "exist", res.Err() == nil)
 	return res.Err() == nil
 }
 
 func WriteInDb(acid string) {
 	info, err := dougaInfo.GetVideoInfo(acid)
 	if err != nil {
+		common.Log.Debug("saveDougaInfoToDb.mongodb.WriteInDb call dougaInfo.GetVideoInfo faild", "error", err.Error())
 		return
 	}
 	bsonData, err := bson.Marshal(info)
@@ -54,4 +60,5 @@ func WriteInDb(acid string) {
 		return
 	}
 	collection.InsertOne(context.Background(), bsonData)
+	common.Log.Debug("saveDougaInfoToDb.mongodb.WriteInDb save douga info to db", "acid", acid)
 }

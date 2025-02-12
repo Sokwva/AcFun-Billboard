@@ -2,6 +2,7 @@ package main
 
 import (
 	"sokwva/acfun/billboard/common"
+	saveDougaInfoToDb "sokwva/acfun/billboard/db/persist"
 	"sokwva/acfun/billboard/db/timeseries"
 	"sokwva/acfun/billboard/fetch/dougaInfo"
 	"sokwva/acfun/billboard/poll"
@@ -32,6 +33,10 @@ func main() {
 		return
 	}
 	defer dougaInfo.CloseGrpcClient()
+	err = saveDougaInfoToDb.InitClient()
+	if err != nil {
+		common.Log.Error(err.Error())
+	}
 
 	poll.Poller()
 }
